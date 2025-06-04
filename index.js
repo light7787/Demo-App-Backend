@@ -8,9 +8,19 @@ const { getConnection } = require('./salesforce/connection');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS Configuration
+// app.use(cors());
+// app.options('*', cors());
+
+
 // Middleware
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+ // Use the cors middleware with options
 app.use(express.json());
+app.use(cors({
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Routes
 app.use('/api/contacts', contactRoutes);
@@ -27,6 +37,7 @@ async function startServer() {
     await getConnection();
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
+     
     });
   } catch (error) {
     console.error('Failed to initialize Salesforce connection:', error);
