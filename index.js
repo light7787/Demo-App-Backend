@@ -3,7 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const contactRoutes = require('./routes/contactRoutes');
 const accountRoutes = require('./routes/accountRoutes');
+const authRoutes = require('./mongo/routes')
 const { getConnection } = require('./salesforce/connection');
+
+const mongoose = require("mongoose");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,16 +28,24 @@ app.use(cors({
 // Routes
 app.use('/api/contacts', contactRoutes);
 app.use('/api/accounts', accountRoutes);
+app.use('/api/auth',authRoutes)
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
+
 // Initialize Salesforce connection and start server
 async function startServer() {
   try {
     await getConnection();
+    mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/auth_demo', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
      
