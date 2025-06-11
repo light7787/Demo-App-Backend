@@ -3,21 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const contactRoutes = require('./routes/contactRoutes');
 const accountRoutes = require('./routes/accountRoutes');
-const authRoutes = require('./mongo/routes')
+const authRoutes = require('./mongo/routes');
 const { getConnection } = require('./salesforce/connection');
-
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS Configuration
-// app.use(cors());
-// app.options('*', cors());
-
-
 // Middleware
- // Use the cors middleware with options
 app.use(express.json());
 app.use(cors({
   origin: '*', // Allow all origins
@@ -25,37 +18,32 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Routes
-
-
-// Health check
+// Health check route
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
-
-// Initialize Salesforce connection and start server
+// Initialize Salesforce and MongoDB connections, then start server
 async function startServer() {
   try {
-    await getConnection();
-    mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/auth_demo', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB')
-     app.use('/api/contacts', contactRoutes);
-app.use('/api/accounts', accountRoutes);
-app.use('/api/auth',authRoutes)
-     
-     )
+    await getConnection(); // Connect to Salesforce (optional)
 
-.catch(err => console.error('MongoDB connection error:', err));
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/auth_demo', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ Connected to MongoDB');
+
+    // Register routes after MongoDB is connected
+    app.use('/api/contacts', contactRoutes);
+    app.use('/api/accounts', accountRoutes);
+    app.use('/api/auth', authRoutes);
+
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-     
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to initialize Salesforce connection:', error);
+    console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }
