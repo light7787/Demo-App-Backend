@@ -21,11 +21,11 @@ router.post('/signup', async (req, res) => {
       }
   
       // Check for existing user
-      // const existingUser = await User.findOne({ email });
-      // if (existingUser) {
-      //   console.log("Duplicate email attempt:", email);
-      //   return res.status(409).json({ message: 'Email already in use' });
-      // }
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        console.log("Duplicate email attempt:", email);
+        return res.status(409).json({ message: 'Email already in use' });
+      }
   
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -58,10 +58,10 @@ router.post('/signup', async (req, res) => {
       const { email, password } = req.body;
       
       // Find user
-      // const user = await User.findOne({ email });
-      // if (!user) {
-      //   return res.status(400).json({ message: 'Invalid credentials' });
-      // }
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
       
       // Check password
       const isMatch = await bcrypt.compare(password, user.password);
