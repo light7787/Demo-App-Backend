@@ -26,9 +26,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use('/api/contacts', contactRoutes);
-app.use('/api/accounts', accountRoutes);
-app.use('/api/auth',authRoutes)
+
 
 // Health check
 app.get('/health', (req, res) => {
@@ -44,7 +42,13 @@ async function startServer() {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('Connected to MongoDB'))
+.then(() => console.log('Connected to MongoDB')
+     app.use('/api/contacts', contactRoutes);
+app.use('/api/accounts', accountRoutes);
+app.use('/api/auth',authRoutes)
+     
+     )
+
 .catch(err => console.error('MongoDB connection error:', err));
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
