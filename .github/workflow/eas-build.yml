@@ -1,31 +1,25 @@
 name: EAS Build - Android
  
 on:
-  workflow_dispatch: # allows manual trigger from GitHub Actions UI
+  workflow_dispatch:
  
 jobs:
-  eas-build:
+  build:
     runs-on: ubuntu-latest
  
     steps:
-      - name: 🧾 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v3
  
-      - name: 📦 Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
  
-      - name: 📥 Install dependencies
-        run: npm install
- 
-      - name: 🛠 Install EAS CLI
+      - name: Install EAS CLI
         run: npm install -g eas-cli
  
-      - name: 🔐 Authenticate with Expo
-        run: eas whoami || echo "${{ secrets.EXPO_TOKEN }}" | eas login --token
- 
-      - name: 🚀 Build Android App
-        run: eas build --platform android --non-interactive
+      - name: Run EAS Build (Android)
+        run: eas build --platform android --non-interactive --profile production
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
